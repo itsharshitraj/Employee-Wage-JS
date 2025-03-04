@@ -18,20 +18,24 @@ const PART_TIME_HOURS = 4;
 const FULL_TIME_HOURS = 8;
 const WAGE_PER_HOUR = 20;
 
-let empHours = 0;
-let empCheck2 = Math.floor(Math.random() * 3); // Generates 0, 1, or 2
+/*let empHours = 0;
+let empCheck2 = Math.floor(Math.random() * 3); // Generates 0, 1, or 2*/
 
-switch (empCheck) {
+function getWorkHours(employeeCheck) {
+switch (employeeCheck) {
     case IS_PART_TIME:
-        empHours = PART_TIME_HOURS;
-        break;
+      return PART_TIME_HOURS;
+     
     case IS_FULL_TIME:
-        empHours = FULL_TIME_HOURS;
-        break;
+      return FULL_TIME_HOURS;
+        
     default:
-        empHours = 0;
+       return 0;
 }
-
+}
+// Generate Employee Type (0 - Absent, 1 - Part-time, 2 - Full-time)
+let employeeCheck = Math.floor(Math.random() * 3);
+let empHours = getWorkHours(empCheck);
 let empWage = empHours * WAGE_PER_HOUR;
 console.log(`Employee worked for ${empHours} hours and earned $${empWage} today.`);
 
