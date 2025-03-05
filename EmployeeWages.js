@@ -1,5 +1,5 @@
 
-// UC-9: Use Daily Wage Map & Daily Hour Map with Arrow Functions
+// UC-10: Store Day, Hours Worked, and Wage Earned in a Single Object
 
 const IS_ABSENT = 0;
 const IS_PART_TIME = 1;
@@ -30,8 +30,7 @@ switch (employeeCheck) {
 
 let totalWorkHours = 0;
 let totalWorkingDays = 0;
-let dailyWageMap = new Map(); // Map to store day-wise wage
-let dailyHourMap = new Map(); // Map to store day-wise work hours
+let employeeDailyData = []; // Array to store objects with day, hours worked, and wage earned
 
 // Loop until max working days (20) or max work hours (160) is reached
 while (totalWorkingDays < WORKING_DAYS_IN_MONTH && totalWorkHours < MAX_WORKING_HOURS) {
@@ -41,20 +40,14 @@ while (totalWorkingDays < WORKING_DAYS_IN_MONTH && totalWorkHours < MAX_WORKING_
     totalWorkHours += workHours;
 
     let dailyWage = calculateDailyWage(workHours);
-    dailyWageMap.set(totalWorkingDays, dailyWage); // Store day-wise wage in map
-    dailyHourMap.set(totalWorkingDays, workHours);
+
+    // Store details in an object and push to array
+    employeeDailyData.push({
+        day: totalWorkingDays,
+        hoursWorked: workHours,
+        wageEarned: dailyWage
+    });
 }
 
-// (a) Calculate Total Wage and Total Hours Worked using Arrow Functions
-let totalWageFromMap = Array.from(dailyWageMap.values()).reduce((total, wage) => total + wage, 0);
-let totalHoursFromMap = Array.from(dailyHourMap.values()).reduce((total, hours) => total + hours, 0);
-console.log(`Total Hours Worked: ${totalHoursFromMap}, Total Wage: $${totalWageFromMap}`);
-
-// (b) Show Full Working Days, Part Working Days, and No Working Days using Arrow Functions
-let fullWorkingDays = Array.from(dailyHourMap.entries()).filter(([day, hours]) => hours === FULL_TIME_HOURS).map(([day]) => `Day ${day}`);
-let partWorkingDays = Array.from(dailyHourMap.entries()).filter(([day, hours]) => hours === PART_TIME_HOURS).map(([day]) => `Day ${day}`);
-let noWorkingDays = Array.from(dailyHourMap.entries()).filter(([day, hours]) => hours === 0).map(([day]) => `Day ${day}`);
-
-console.log("Full Working Days:", fullWorkingDays.join(", "));
-console.log("Part Working Days:", partWorkingDays.join(", "));
-console.log("No Working Days:", noWorkingDays.join(", "));
+// Print stored objects
+console.log("Employee Daily Data:", employeeDailyData);
