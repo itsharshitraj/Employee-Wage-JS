@@ -1,6 +1,5 @@
 
-// UC-10: Store Day, Hours Worked, and Wage Earned in a Single Object
-
+// UC-11: Perform Object Operations Using Arrow Functions
 const IS_ABSENT = 0;
 const IS_PART_TIME = 1;
 const IS_FULL_TIME = 2;
@@ -49,5 +48,28 @@ while (totalWorkingDays < WORKING_DAYS_IN_MONTH && totalWorkHours < MAX_WORKING_
     });
 }
 
-// Print stored objects
-console.log("Employee Daily Data:", employeeDailyData);
+
+// (a) Calculate Total Wage and Total Hours Worked using Arrow Functions
+let totalWage = employeeDailyData.reduce((total, dayData) => total + dayData.wageEarned, 0);
+let totalHours = employeeDailyData.reduce((total, dayData) => total + dayData.hoursWorked, 0);
+console.log(`Total Hours Worked: ${totalHours}, Total Wage: $${totalWage}`);
+
+// (b) Show Full Working Days using forEach
+console.log("Full Working Days:");
+employeeDailyData.forEach(dayData => {
+    if (dayData.hoursWorked === FULL_TIME_HOURS) {
+        console.log(`Day ${dayData.day}`);
+    }
+});
+
+// (c) Show Part Working Days using Map (Reducing to String Array)
+let partWorkingDays = employeeDailyData
+    .filter(dayData => dayData.hoursWorked === PART_TIME_HOURS)
+    .map(dayData => `Day ${dayData.day}`);
+console.log("Part Working Days:", partWorkingDays.join(", "));
+
+// (d) Show No Working Days using Map
+let noWorkingDays = employeeDailyData
+    .filter(dayData => dayData.hoursWorked === 0)
+    .map(dayData => `Day ${dayData.day}`);
+console.log("No Working Days:", noWorkingDays.join(", "));
