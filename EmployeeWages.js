@@ -1,5 +1,5 @@
 
-// UC-11: Perform Object Operations Using Arrow Functions
+// UC-11B: Create Employee Payroll Data with ID, Name, and Salary
 const IS_ABSENT = 0;
 const IS_PART_TIME = 1;
 const IS_FULL_TIME = 2;
@@ -27,9 +27,38 @@ switch (employeeCheck) {
 
  const calculateDailyWage = (workHours) => workHours * WAGE_PER_HOUR;
 
+ // Employee Payroll Class
+class EmployeePayroll {
+    constructor(id, name, salary) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+        this.dailyWageData = []; // Stores daily wages, hours, and days
+    }
+ // Function to add daily wage entry
+    addDailyWage(day, hoursWorked, wageEarned) {
+        this.dailyWageData.push({ day, hoursWorked, wageEarned });
+    }
+// Function to calculate total wage and total hours worked.
+
+calculateTotal() {
+    let totalWage = this.dailyWageData.reduce((sum, dayData) => sum + dayData.wageEarned, 0);
+    let totalHours = this.dailyWageData.reduce((sum, dayData) => sum + dayData.hoursWorked, 0);
+    return { totalHours, totalWage };
+}
+
+// Function to display Employee Payroll details
+toString() {
+    let { totalHours, totalWage } = this.calculateTotal();
+    return `ID: ${this.id}, Name: ${this.name}, Salary: $${this.salary}, Total Hours: ${totalHours}, Total Wage: $${totalWage}`;
+}}
+// Create an Employee Payroll Object
+let employee1 = new EmployeePayroll(1, "John Doe", 50000);
+
+// Variables for tracking work
 let totalWorkHours = 0;
 let totalWorkingDays = 0;
-let employeeDailyData = []; // Array to store objects with day, hours worked, and wage earned
+
 
 // Loop until max working days (20) or max work hours (160) is reached
 while (totalWorkingDays < WORKING_DAYS_IN_MONTH && totalWorkHours < MAX_WORKING_HOURS) {
@@ -37,39 +66,12 @@ while (totalWorkingDays < WORKING_DAYS_IN_MONTH && totalWorkHours < MAX_WORKING_
     let employeeCheck = Math.floor(Math.random() * 3);
     let workHours = getWorkHours(employeeCheck);
     totalWorkHours += workHours;
-
     let dailyWage = calculateDailyWage(workHours);
 
-    // Store details in an object and push to array
-    employeeDailyData.push({
-        day: totalWorkingDays,
-        hoursWorked: workHours,
-        wageEarned: dailyWage
-    });
+    // Add daily wage data to the employee
+    employee1.addDailyWage(totalWorkingDays, workHours, dailyWage);
 }
+// Print Employee Payroll Data
+console.log(employee1.toString());
+console.log("Daily Wage Details:", employee1.dailyWageData);
 
-
-// (a) Calculate Total Wage and Total Hours Worked using Arrow Functions
-let totalWage = employeeDailyData.reduce((total, dayData) => total + dayData.wageEarned, 0);
-let totalHours = employeeDailyData.reduce((total, dayData) => total + dayData.hoursWorked, 0);
-console.log(`Total Hours Worked: ${totalHours}, Total Wage: $${totalWage}`);
-
-// (b) Show Full Working Days using forEach
-console.log("Full Working Days:");
-employeeDailyData.forEach(dayData => {
-    if (dayData.hoursWorked === FULL_TIME_HOURS) {
-        console.log(`Day ${dayData.day}`);
-    }
-});
-
-// (c) Show Part Working Days using Map (Reducing to String Array)
-let partWorkingDays = employeeDailyData
-    .filter(dayData => dayData.hoursWorked === PART_TIME_HOURS)
-    .map(dayData => `Day ${dayData.day}`);
-console.log("Part Working Days:", partWorkingDays.join(", "));
-
-// (d) Show No Working Days using Map
-let noWorkingDays = employeeDailyData
-    .filter(dayData => dayData.hoursWorked === 0)
-    .map(dayData => `Day ${dayData.day}`);
-console.log("No Working Days:", noWorkingDays.join(", "));
