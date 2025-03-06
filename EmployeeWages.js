@@ -1,131 +1,78 @@
-// UC-13: Validate Employee Name Using Regex & Try-Catch
-
-const IS_ABSENT = 0;
-const IS_PART_TIME = 1;
-const IS_FULL_TIME = 2;
-const PART_TIME_HOURS = 4;
-const FULL_TIME_HOURS = 8;
-const WAGE_PER_HOUR = 20;
-const WORKING_DAYS_IN_MONTH = 20;
-const MAX_WORKING_HOURS = 160;
-
-// Function to get work hours based on employee type.
-function getWorkHours(employeeCheck) {
-switch (employeeCheck) {
-    case IS_PART_TIME:
-      return PART_TIME_HOURS;
-     
-    case IS_FULL_TIME:
-      return FULL_TIME_HOURS;
-        
-    default:
-       return 0;
-}
-};
-
- // Function to calculate daily wage.
-
- const calculateDailyWage = (workHours) => workHours * WAGE_PER_HOUR;
-
- // Employee Payroll Class
-class EmployeePayroll {
-    constructor(id, name, salary,gender,startDate) {
-        this.id = id;
-        this.name = name;
-        this.salary = salary;
-        this.gender = gender;
-        this.startDate = new Date(startDate);
-        this.dailyWageData = []; // Stores daily wages, hours, and days
-    }
- // Function to validate Employee Name
-    validateName = (name) => {
-        let namePattern = /^[A-Z][a-zA-Z]{2,}$/;
-        if (!namePattern.test(name)) {
-            throw new Error(`Invalid Name: "${name}". Name must start with a capital letter and have at least 3 characters.`);
+class EmployeePayrollData {
+    constructor(id, name, salary, gender, startDate) {
+        try {
+            this.setId(id);
+            this.setName(name);
+            this.setSalary(salary);
+            this.setGender(gender);
+            this.setStartDate(startDate);
+        } catch (error) {
+            console.error(error.message);
         }
-        return name;
-    };
-
-
- // Function to add daily wage entry
-    addDailyWage(day, hoursWorked, wageEarned) {
-        this.dailyWageData.push({ day, hoursWorked, wageEarned });
-    };
-
-// (a) Calculate total wage and total hours worked using reduce.
-
-calculateTotal = () => ({
-    totalWage : this.dailyWageData.reduce((sum, dayData) => sum + dayData.wageEarned, 0),
-    totalHours : this.dailyWageData.reduce((sum, dayData) => sum + dayData.hoursWorked, 0),
-    
-});
-
-
-  // (b) Show full working days using forEach.
- 
-getFullWorkingDays = () => {
-    console.log("Full Working Days:");
-    this.dailyWageData.forEach((dayData) => {
-        if (dayData.hoursWorked === FULL_TIME_HOURS)
-            console.log(`Day ${dayData.day}: ${dayData.hoursWorked} Hours, Wage: $${dayData.wageEarned}`);
-    });
-};
-
-
- // (c) Show part-time working days using map & filter.
- 
-getPartWorkingDays = () => {
-    return this.dailyWageData
-        .filter((dayData) => dayData.hoursWorked === PART_TIME_HOURS)
-        .map((dayData) => `Day ${dayData.day}`);
-};
-
- // (d) Show no working days using map & filter.
- 
-getNoWorkingDays = () => {
-    return this.dailyWageData
-        .filter((dayData) => dayData.hoursWorked === 0) // Filter days with 0 hours
-        .map((dayData) => `Day ${dayData.day}`);
-};
-
- // Function to display Employee Payroll details.
-
-toString = () => {
-    let { totalHours, totalWage } = this.calculateTotal();
-    return `ID: ${this.id}, Name: ${this.name}, Gender: ${this.gender}, Salary: $${this.salary}, Start Date: ${this.startDate.toDateString()}, Total Hours: ${totalHours}, Total Wage: $${totalWage}`;
-};
-}
-
-// Create Employee Payroll Object with Validation
-
-try {
-    let employee1 = new EmployeePayroll(1, "John Doe", 50000, "Male", "2024-03-01");
-
-    // Variables for tracking work
-    let totalWorkHours = 0;
-    let totalWorkingDays = 0;
-
-    // Simulate working days until max work hours or max days is reached
-    while (totalWorkingDays < WORKING_DAYS_IN_MONTH && totalWorkHours < MAX_WORKING_HOURS) {
-        totalWorkingDays++;
-        let employeeCheck = Math.floor(Math.random() * 3);
-        let workHours = getWorkHours(employeeCheck);
-        totalWorkHours += workHours;
-        let dailyWage = calculateDailyWage(workHours);
-
-        // Add daily wage data to the employee
-        employee1.addDailyWage(totalWorkingDays, workHours, dailyWage);
     }
 
-    // Print Employee Payroll Data
-    console.log(employee1.toString());
+    setId(id) {
+        if (typeof id !== "number" || isNaN(id)) {
+            throw new Error("Invalid ID: ID must be a number.");
+        }
+        let idPattern = /^[1-9][0-9]*$/; // Positive non-zero number
+        if (idPattern.test(id.toString())) {
+            this.id = id;
+        } else {
+            throw new Error("Invalid ID: ID must be a positive non-zero number.");
+        }
+    }
 
-    // UC-13: Perform Object Operations using Arrow Functions
-    console.log("\n--- UC-13: Object Operations ---");
-    employee1.getFullWorkingDays();
-    console.log("Part Working Days:", employee1.getPartWorkingDays());
-    console.log("No Working Days:", employee1.getNoWorkingDays());
+    setName(name) {
+        let namePattern = /^[A-Z][a-z]{2,}$/; // Capital first letter, min 3 chars
+        if (namePattern.test(name)) {
+            this.name = name;
+        } else {
+            throw new Error("Invalid Name: Must start with a capital letter & be at least 3 characters long.");
+        }
+    }
 
-} catch (error) {
-    console.error("Error:", error.message);
+    setSalary(salary) {
+        if (typeof salary !== "number" || isNaN(salary)) {
+            throw new Error("Invalid Salary: Must be a number.");
+        }
+        let salaryPattern = /^[1-9][0-9]*$/; // Positive non-zero number
+        if (salaryPattern.test(salary.toString())) {
+            this.salary = salary;
+        } else {
+            throw new Error("Invalid Salary: Must be a positive non-zero number.");
+        }
+    }
+
+    setGender(gender) {
+        let genderPattern = /^[MF]$/; // Only 'M' or 'F' allowed
+        if (genderPattern.test(gender)) {
+            this.gender = gender;
+        } else {
+            throw new Error("Invalid Gender: Must be 'M' or 'F'.");
+        }
+    }
+
+    setStartDate(startDate) {
+        let today = new Date();
+        if (startDate instanceof Date && startDate <= today) {
+            this.startDate = startDate;
+        } else {
+            throw new Error("Invalid Start Date: Date must not be a future date.");
+        }
+    }
+
+    toString() {
+        let startDateStr = this.startDate ? this.startDate.toDateString() : "Invalid Date";
+        return `ID: ${this.id}, Name: ${this.name}, Gender: ${this.gender}, Salary: $${this.salary}, Start Date: ${startDateStr}`;
+    }
 }
+
+// Test with Valid Data**
+try {
+    let employeePayroll = new EmployeePayrollData(1, "John", 50000, "M", new Date("2024-03-01"));
+    console.log(employeePayroll.toString());
+} catch (error) {
+    console.error(error.message);
+}
+
