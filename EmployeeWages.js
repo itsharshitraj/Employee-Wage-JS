@@ -1,122 +1,83 @@
-// ========================= UC-14: Employee Payroll Data with Validation =========================
-class EmployeePayrollData {
-    constructor(id, name, salary, gender, startDate) {
-        try {
-            this.setId(id);
-            this.setName(name);
-            this.setSalary(salary);
-            this.setGender(gender);
-            this.setStartDate(startDate);
-        } catch (error) {
-            console.error(error.message);
-        }
-    }
 
-    setId(id) {
-        if (typeof id !== "number" || isNaN(id)) {
-            throw new Error("Invalid ID: ID must be a number.");
-        }
-        let idPattern = /^[1-9][0-9]*$/; // Positive non-zero number
-        if (idPattern.test(id.toString())) {
-            this.id = id;
-        } else {
-            throw new Error("Invalid ID: ID must be a positive non-zero number.");
-        }
-    }
+// UC-7: Perform Various Operations Using Array Helper Functions
 
-    setName(name) {
-        let namePattern = /^[A-Z][a-z]{2,}$/; // Capital first letter, min 3 chars
-        if (namePattern.test(name)) {
-            this.name = name;
-        } else {
-            throw new Error("Invalid Name: Must start with a capital letter & be at least 3 characters long.");
-        }
-    }
+const IS_ABSENT = 0;
+const IS_PART_TIME = 1;
+const IS_FULL_TIME = 2;
+const PART_TIME_HOURS = 4;
+const FULL_TIME_HOURS = 8;
+const WAGE_PER_HOUR = 20;
+const WORKING_DAYS_IN_MONTH = 20;
+const MAX_WORKING_HOURS = 160;
 
-    setSalary(salary) {
-        if (typeof salary !== "number" || isNaN(salary)) {
-            throw new Error("Invalid Salary: Must be a number.");
-        }
-        let salaryPattern = /^[1-9][0-9]*$/; // Positive non-zero number
-        if (salaryPattern.test(salary.toString())) {
-            this.salary = salary;
-        } else {
-            throw new Error("Invalid Salary: Must be a positive non-zero number.");
-        }
-    }
 
-    setGender(gender) {
-        let genderPattern = /^[MF]$/; // Only 'M' or 'F' allowed
-        if (genderPattern.test(gender)) {
-            this.gender = gender;
-        } else {
-            throw new Error("Invalid Gender: Must be 'M' or 'F'.");
-        }
-    }
-
-    setStartDate(startDate) {
-        let today = new Date();
-        if (startDate instanceof Date && startDate <= today) {
-            this.startDate = startDate;
-        } else {
-            throw new Error("Invalid Start Date: Date must not be a future date.");
-        }
-    }
-
-    toString() {
-        let startDateStr = this.startDate ? this.startDate.toDateString() : "Invalid Date";
-        return `ID: ${this.id}, Name: ${this.name}, Gender: ${this.gender}, Salary: $${this.salary}, Start Date: ${startDateStr}`;
-    }
+function getWorkHours(employeeCheck) {
+switch (employeeCheck) {
+    case IS_PART_TIME:
+      return PART_TIME_HOURS;
+     
+    case IS_FULL_TIME:
+      return FULL_TIME_HOURS;
+        
+    default:
+       return 0;
+}
 }
 
-// Test with Valid Data**
-try {
-    let employeePayroll = new EmployeePayrollData(1, "John", 50000, "M", new Date("2024-03-01"));
-    console.log(employeePayroll.toString());
-} catch (error) {
-    console.error(error.message);
+ // Function to calculate daily wage.
+ function calculateDailyWage(workHours) {
+    return workHours * WAGE_PER_HOUR;
 }
 
-// ========================= UC-7: Employee Wage Operations Using Arrow Functions =========================
-let employeeWageData = [
-    { day: 1, hoursWorked: 8, dailyWage: 160 },
-    { day: 2, hoursWorked: 4, dailyWage: 80 },
-    { day: 3, hoursWorked: 0, dailyWage: 0 },
-    { day: 4, hoursWorked: 8, dailyWage: 160 },
-    { day: 5, hoursWorked: 4, dailyWage: 80 },
-    { day: 6, hoursWorked: 8, dailyWage: 160 },
-    { day: 7, hoursWorked: 0, dailyWage: 0 },
-    { day: 8, hoursWorked: 8, dailyWage: 160 },
-];
+let totalWorkHours = 0;
+let totalWorkingDays = 0;
+let dailyWageArray = [];
+let dailyWageMap = new Map(); // Store day-wise wage
 
-// (a) Calculate Total Wage using Arrow Function and reduce()
-const totalWage = employeeWageData.reduce((total, emp) => total + emp.dailyWage, 0);
+// Loop until max working days (20) or max work hours (160) is reached
+while (totalWorkingDays < WORKING_DAYS_IN_MONTH && totalWorkHours < MAX_WORKING_HOURS) {
+    totalWorkingDays++;
+    let employeeCheck = Math.floor(Math.random() * 3);
+    let workHours = getWorkHours(employeeCheck);
+    totalWorkHours += workHours;
 
-// (b) Show the Day along with Daily Wage using Map
-const dailyWageWithDay = employeeWageData.map(emp => `Day ${emp.day}: $${emp.dailyWage}`);
+    let dailyWage = calculateDailyWage(workHours);
+    dailyWageArray.push(dailyWage); // Store daily wage in array
+    dailyWageMap.set(totalWorkingDays, dailyWage); // Store day-wise wage in map
+}
 
-// (c) Show Days when Full-Time Wage (160) was earned using Filter
-const fullTimeDays = employeeWageData
-    .filter(emp => emp.dailyWage === 160)
-    .map(emp => `Day ${emp.day}`);
 
-// (d) Find the first occurrence when Full-Time Wage was earned using Find
-const firstFullTimeDay = employeeWageData.find(emp => emp.dailyWage === 160);
+// a. Calculate Total Wage using reduce
+let totalWage = dailyWageArray.reduce((total, wage) => total + wage, 0);
+console.log(`Total Wage using reduce: $${totalWage}`);
 
-// (e) Check if Every Element of Full-Time Wage is truly holding Full-Time Wage using Every
-const isEveryFullTime = fullTimeDays.every(day => day.dailyWage === 160);
+// b. Show Day along with Daily Wage using map
+let dailyWageWithDay = Array.from(dailyWageMap.entries()).map(([day, wage]) => `Day ${day}: $${wage}`);
+console.log("Daily Wage with Day:", dailyWageWithDay.join(" | "));
 
-// (f) Check if there is any Part-Time Wage using Some
-const isAnyPartTime = employeeWageData.some(emp => emp.dailyWage === 80);
+// c. Show Days when Full-Time Wage (160) was earned using filter
+let fullTimeWageDays = Array.from(dailyWageMap.entries())
+    .filter(([day, wage]) => wage === FULL_TIME_HOURS * WAGE_PER_HOUR)
+    .map(([day, wage]) => `Day ${day}`);
+console.log("Days when Full Time Wage was earned:", fullTimeWageDays.join(", "));
 
-// (g) Find the number of days the Employee Worked using Reduce
-const workedDaysCount = employeeWageData.reduce((count, emp) => count + (emp.dailyWage > 0 ? 1 : 0), 0);
+// d. Find First Occurrence of Full-Time Wage using find
+let firstFullTimeWageDay = Array.from(dailyWageMap.entries())
+    .find(([day, wage]) => wage === FULL_TIME_HOURS * WAGE_PER_HOUR);
+console.log(`First occurrence of Full-Time Wage: Day ${firstFullTimeWageDay[0]}`);
 
-// Displaying Results
-console.log("Total Wage:", totalWage);
-console.log("Daily Wage with Days:", dailyWageWithDay);
-console.log("Full-Time Days:", fullTimeDays);
-console.log("First Full-Time Wage Day:", firstFullTimeDay);
-console.log("Every Full-Time Day has Correct Wage?", isEveryFullTime);
-console.log("Is There Any Part-Time Wage?", isAnyPartTime);
-console.log("Total Worked Days:", workedDaysCount);
+// e. Check if Every Element of Full-Time Wage Array is truly holding Full-Time Wage using every
+let isEveryFullTimeWage = fullTimeWageDays.every(day => dailyWageMap.get(parseInt(day.split(" ")[1])) === FULL_TIME_HOURS * WAGE_PER_HOUR);
+console.log(`Does every Full-Time Wage Entry hold the correct wage? ${isEveryFullTimeWage}`);
+
+// f. Check if there is any Part-Time Wage using some
+let hasPartTimeWage = dailyWageArray.some(wage => wage === PART_TIME_HOURS * WAGE_PER_HOUR);
+console.log(`Is there any Part-Time Wage? ${hasPartTimeWage}`);
+
+// g. Find the number of days the Employee Worked using filter
+let numOfDaysWorked = Array.from(dailyWageMap.values()).filter(wage => wage > 0).length;
+console.log(`Total Number of Days Employee Worked: ${numOfDaysWorked}`);
+
+
+
+
